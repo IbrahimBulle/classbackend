@@ -14,7 +14,7 @@ app.use(cors())
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5500",  // Change this to the actual frontend domain
+    origin: "https://venerable-seahorse-a298c3.netlify.app/",  // Change this to the actual frontend domain
     methods: ["GET", "POST"],
     allowedHeaders: ["my-custom-header"],
     credentials: true  // Allow cookies and credentials
