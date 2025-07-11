@@ -8,25 +8,11 @@ import cors from "cors";
 const app = express();
 app.use(express.json()); // Middleware to parse JSON
 const server = http.createServer(app)
-const allowedOrigins = [
-  "http://127.0.0.1:5500", 
-  "http://localhost:5173", 
-  "http://localhost:5500", 
-  "http://localhost:3000"
-];
 
-app.use(cors({
-  origin: allowedOrigins,
-  methods: ["GET", "POST", "DELETE", "OPTIONS"], // Added OPTIONS here for preflight requests
-  allowedHeaders: ["Content-Type"],
-  credentials: true, 
-  preflightContinue: false,  
-}));
-
-
+app.use(cors())
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: "*",
     methods: ["GET", "POST", "DELETE", "OPTIONS"], // Make sure OPTIONS is handled
     allowedHeaders: ["Content-Type"],
     credentials: true,
