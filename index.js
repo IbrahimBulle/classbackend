@@ -8,13 +8,31 @@ import cors from "cors";
 const app = express();
 app.use(express.json()); // Middleware to parse JSON
 const server = http.createServer(app)
-const io = new Server(server,{
-cors:{
-	
-  origin: ["*"],
-	methods:["GET","POST","DELETE"]
-}
-})
+const allowedOrigins = [
+  "http://127.0.0.1:5500", 
+  "http://localhost:5173", 
+  "http://localhost:5500", 
+  "http://localhost:3000"
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "DELETE", "OPTIONS"], // Added OPTIONS here for preflight requests
+  allowedHeaders: ["Content-Type"],
+  credentials: true, 
+  preflightContinue: false,  
+}));
+
+
+const io = new Server(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "DELETE", "OPTIONS"], // Make sure OPTIONS is handled
+    allowedHeaders: ["Content-Type"],
+    credentials: true,
+  }
+});
+
 io.on("connection",(socket)=>{
 	console.log("hello")
 	socket.emit("message", "hello from server via socket");
@@ -24,11 +42,7 @@ io.on("connection",(socket)=>{
 	
        })
 
-app.use(cors({
-	
-  origin: ["*"],
-	methods:["GET","POST","DELETE"]
-}))
+
 
 
 
@@ -45,7 +59,7 @@ app.get('/', async (req, res) => {
 });
 
 
-app.get('/latest', async (req, res) => {
+app.get('/api/latest', async (req, res) => {
 	try {
 		const data = await reading.find()
 		io.emit("lastReading",data[data.length-1])
@@ -57,7 +71,7 @@ app.get('/latest', async (req, res) => {
 });
 
 
-app.post('/readings', async (req, res) => {
+app.post('/api/readings', async (req, res) => {
 	try {
 		const { temp, humidity, soil_moisture, light_intensity } = req.body
 
@@ -74,7 +88,7 @@ app.post('/readings', async (req, res) => {
 	}
 });
 
-app.delete('/readings/:id', async (req, res) => {
+app.delete('/api/readings/:id', async (req, res) => {
 	try {
 		const deleted = await reading.findByIdAndDelete(req.params.id)
 		if (!deleted) {
