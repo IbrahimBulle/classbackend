@@ -11,14 +11,7 @@ app.use(express.json()); // Middleware to parse JSON
 const server = http.createServer(app)
 
 app.use(cors())
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST", "DELETE", "OPTIONS"], // Make sure OPTIONS is handled
-    allowedHeaders: ["Content-Type"],
-    credentials: true,
-  }
-});
+const io = new Server(server, cors());
 
 io.on("connection",(socket)=>{
 	console.log("hello")
