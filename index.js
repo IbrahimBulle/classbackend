@@ -11,12 +11,12 @@ app.use(express.json()); // Middleware to parse JSON
 const server = http.createServer(app)
 
 app.use(cors())
-const io = new Server(server, {
+const io = require("socket.io")(httpServer, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST", "DELETE", "OPTIONS"], // Make sure OPTIONS is handled
-    allowedHeaders: ["Content-Type"],
-    credentials: true,
+    origin: "https://example.com",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true
   }
 });
 
