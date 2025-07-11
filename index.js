@@ -6,6 +6,7 @@ import http from "http"
 import cors from "cors";
 
 const app = express();
+app.use(cors());
 app.use(express.json()); // Middleware to parse JSON
 const server = http.createServer(app)
 
@@ -28,9 +29,7 @@ io.on("connection",(socket)=>{
 	
        })
 
-
-
-
+app.use(cors())
 
 
 app.get('/', async (req, res) => {
