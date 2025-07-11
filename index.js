@@ -1,0 +1,91 @@
+import express from "express";
+import connectDB from "./db.js";
+import reading from "./models/usermodels.js";
+import { Server} from "socket.io";
+import http from "http"
+import cors from "cors";
+
+const app = express();
+app.use(express.json()); // Middleware to parse JSON
+const server = http.createServer(app)
+const io = new Server(server,{
+cors:{
+	
+  origin: ["*"],
+	methods:["GET","POST","DELETE"]
+}
+})
+io.on("connection",(socket)=>{
+	console.log("hello")
+	socket.emit("message", "hello from server via socket");
+	socket.on("greet",(msg)=>{
+		console.log("client:" ,msg)
+	})
+	
+       })
+
+app.use(cors({
+	
+  origin: ["*"],
+	methods:["GET","POST","DELETE"]
+}))
+
+
+
+
+app.get('/', async (req, res) => {
+	try {
+		const data = await reading.find()
+		io.emit("latestReading",data[data.length-1])
+		res.json(data)
+		
+	} catch (error) {
+		res.json({ message: error.message })
+	}
+});
+
+
+app.get('/latest', async (req, res) => {
+	try {
+		const data = await reading.find()
+		io.emit("lastReading",data[data.length-1])
+		res.json(data[data.length-1])
+		
+	} catch (error) {
+		res.json({ message: error.message })
+	}
+});
+
+
+app.post('/readings', async (req, res) => {
+	try {
+		const { temp, humidity, soil_moisture, light_intensity } = req.body
+
+		if (!temp || !humidity || !soil_moisture || !light_intensity) {
+			return res.json({ Message: "All fields are required." })
+		}
+
+		const response = await reading.create({ temp, humidity, soil_moisture, light_intensity });
+        io.emit("newReading", response);
+		return res.json({ Message: "success", response })
+	
+	} catch (error) {
+		console.log(error)
+	}
+});
+
+app.delete('/readings/:id', async (req, res) => {
+	try {
+		const deleted = await reading.findByIdAndDelete(req.params.id)
+		if (!deleted) {
+			return res.status(500).json({ message: "item not found" })
+		}
+		res.json({ message: "item deleted", deleted })
+	} catch (err) {
+		if (err) throw err
+	}
+});
+
+const port = 5000;
+connectDB()
+server.listen(port, () => console.log(`Server running on port ${port}`));
