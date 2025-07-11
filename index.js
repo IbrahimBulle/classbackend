@@ -86,6 +86,6 @@ app.delete('/readings/:id', async (req, res) => {
 	}
 });
 
-const port = 5000;
+const port = 8000;
 connectDB()
-server.listen(port, () => console.log(`Server running on port ${port}`));
+server.listen(port || 3000, () => console.log(`Server running on port ${port}`));
