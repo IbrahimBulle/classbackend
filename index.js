@@ -35,7 +35,7 @@ app.use(cors())
 app.get('/', async (req, res) => {
 	try {
 		const data = await reading.find()
-		io.emit("latestReading",data[data.length-1])
+		io.emit("latestFive",data.slice(-5))
 		res.json(data)
 		
 	} catch (error) {
