@@ -29,13 +29,11 @@ io.on("connection",(socket)=>{
 	
        })
 
-app.use(cors())
-
-
 app.get('/', async (req, res) => {
 	try {
 		const data = await reading.find()
-		io.emit("latestFive",data.slice(-5))
+        io.emit("latestFive",data.slice(-5))
+        io.emit("lastReading",data[data.length-1])
 		res.json(data)
 		
 	} catch (error) {
@@ -47,7 +45,6 @@ app.get('/', async (req, res) => {
 app.get('/api/latest', async (req, res) => {
 	try {
 		const data = await reading.find()
-		io.emit("lastReading",data[data.length-1])
 		res.json(data[data.length-1])
 		
 	} catch (error) {
